@@ -1,0 +1,538 @@
+---
+title: "Phenotype_plots"
+output: html_document
+---
+
+```{r LoadPackages and palettes, include=FALSE}
+library(ggplot2)
+library(ggpubr)
+library(dplyr)
+
+library(tidyverse)
+# color palettes and files
+cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+set.seed(9297)
+phenotype_results_sampling <- read.delim("Hub_Inocula_Fungi_map_update.txt")
+phenotype_results_all <- read.delim("hub_inocula_above.txt")
+
+```
+
+
+These plots were made both by day an doverall to show the general trend of the tratments.
+```{r Photosynq}
+# phiNPQ
+
+phenotype_results_all$Days_post_drought<- factor(phenotype_results_all$Days_post_drought,                                                           level=c("-2","0","2","4","6","8","10","12","14","16","18","20","22","24"))
+
+phenotype_results_all_phiNPQ <- phenotype_results_all[!is.na(phenotype_results_all$PhiNPQ),]
+phenotype_results_all_phiNPQ 
+phiNPQ_plot_day <- ggplot(phenotype_results_all_phiNPQ, aes(x = Days_post_drought , y = PhiNPQ, color = Treatment, group = interaction(Treatment))) + 
+  geom_jitter(shape=16, position=position_jitter(0.4), alpha=.3)+
+  stat_summary(fun.y=mean,geom="line") +
+  theme(legend.key.height = unit(0.15, "cm"), legend.key.width = unit(0.25, "cm")) +
+  theme(legend.title = element_text(size = 8, face = "bold"), legend.text = element_text(size = 12)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5) +
+  ylab("PhiNPQ") + 
+  scale_x_discrete("Days Post Drought",labels =c("0","2","4","6","8","10","12","14","16","18","20","22","24"))+
+  xlab("Days Post Drought Start")+
+  ggtitle("PhiNPQ - Daily") + 
+  xlab("")+
+  scale_color_manual(values=cbbPalette) +
+  theme(
+    strip.background = element_rect(color="white", fill="white", size=1.5, linetype="solid"))+
+  #scale_linetype_manual(values = c(rep("solid", 2), rep("dashed", 2))) +
+  stat_compare_means(method = "wilcox", aes(label = ..p.signif..), hide.ns = TRUE, size = 6, label.y = 0.77)+
+  theme_classic()
+
+
+phiNPQ_plot <- ggplot(phenotype_results_all_phiNPQ, aes(x = Treatment , y = PhiNPQ, color = Treatment)) + 
+  stat_summary(fun.y=mean,geom="line") +
+  theme(legend.key.height = unit(0.15, "cm"), legend.key.width = unit(0.25, "cm")) +
+  theme(legend.title = element_text(size = 8, face = "bold"), legend.text = element_text(size = 12)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5) +
+  ylab("PhiNPQ") + 
+  scale_x_discrete("Treatment",labels =c("Control","Experimental"))+
+  xlab("Treatment")+
+  ggtitle("PhiNPQ - Overall") + 
+  xlab("")+
+  geom_boxplot()+
+  scale_color_manual(values=cbbPalette) +
+  geom_jitter(shape=16, position=position_jitter(0.4), alpha=.3)+
+  theme(
+    strip.background = element_rect(color="white", fill="white", size=1.5, linetype="solid"))+
+  #scale_linetype_manual(values = c(rep("solid", 2), rep("dashed", 2))) +
+  stat_compare_means(method = "wilcox", aes(label = ..p.signif..), hide.ns = FALSE, size = 6, label.y = 0.75)+
+  theme_classic()
+
+
+phiNPQ_combo <- ggarrange(phiNPQ_plot_day,phiNPQ_plot, common.legend = TRUE)
+
+# Phi2
+phenotype_results_all_Phi2 <- phenotype_results_all[!is.na(phenotype_results_all$Phi2),]
+phenotype_results_all_Phi2 
+Phi2_plot_day <- ggplot(phenotype_results_all_Phi2, aes(x = Days_post_drought , y = Phi2, color = Treatment, group = interaction(Treatment))) + 
+  geom_jitter(shape=16, position=position_jitter(0.4), alpha=.3)+
+  stat_summary(fun.y=mean,geom="line") +
+  theme(legend.key.height = unit(0.15, "cm"), legend.key.width = unit(0.25, "cm")) +
+  theme(legend.title = element_text(size = 8, face = "bold"), legend.text = element_text(size = 12)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5) +
+  ylab("Phi2") + 
+  scale_x_discrete("Days Post Drought",labels =c("0","2","4","6","8","10","12","14","16","18","20","22","24"))+
+  xlab("Days Post Drought Start")+
+  ggtitle("Phi2 - Daily") + 
+  xlab("")+
+  scale_color_manual(values=cbbPalette) +
+  theme(
+    strip.background = element_rect(color="white", fill="white", size=1.5, linetype="solid"))+
+  #scale_linetype_manual(values = c(rep("solid", 2), rep("dashed", 2))) +
+  stat_compare_means(method = "wilcox", aes(label = ..p.signif..), hide.ns = TRUE, size = 6, label.y = 0.6)+
+  theme_classic()
+
+
+Phi2_plot <- ggplot(phenotype_results_all_Phi2, aes(x = Treatment , y = Phi2, color = Treatment)) + 
+  stat_summary(fun.y=mean,geom="line") +
+  theme(legend.key.height = unit(0.15, "cm"), legend.key.width = unit(0.25, "cm")) +
+  theme(legend.title = element_text(size = 8, face = "bold"), legend.text = element_text(size = 12)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5) +
+  ylab("Phi2") + 
+  scale_x_discrete("Treatment",labels =c("Control","Experimental"))+
+  xlab("Treatment")+
+  ggtitle("Phi2 - Overall") + 
+  xlab("")+
+  geom_boxplot()+
+  scale_color_manual(values=cbbPalette) +
+  geom_jitter(shape=16, position=position_jitter(0.4), alpha=.3)+
+  theme(
+    strip.background = element_rect(color="white", fill="white", size=1.5, linetype="solid"))+
+  #scale_linetype_manual(values = c(rep("solid", 2), rep("dashed", 2))) +
+  stat_compare_means(method = "wilcox", aes(label = ..p.signif..), hide.ns = FALSE, size = 6, label.y = 0.6)+
+  theme_classic()
+
+
+Phi2_combo <- ggarrange(Phi2_plot_day,Phi2_plot, common.legend = TRUE)
+
+# photosynthesis day by day plot
+suppl_fig_1 <- ggarrange(Phi2_plot_day,phiNPQ_plot_day, common.legend =TRUE)
+
+# LEF plots
+phenotype_results_all_LEF <- phenotype_results_all[!is.na(phenotype_results_all$LEF),]
+phenotype_results_all_LEF 
+LEF_plot_day <- ggplot(phenotype_results_all_LEF, aes(x = Days_post_drought , y = LEF, color = Treatment, group = interaction(Treatment))) + 
+  geom_jitter()+
+  stat_summary(fun.y=mean,geom="line") +
+  theme(legend.key.height = unit(0.15, "cm"), legend.key.width = unit(0.25, "cm")) +
+  theme(legend.title = element_text(size = 8, face = "bold"), legend.text = element_text(size = 12)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5) +
+  ylab("LEF") + 
+  scale_x_discrete("Days Post Drought",labels =c("0","2","4","6","8","10","12","14","16","18","20","22","24"))+
+  xlab("Days Post Drought Start")+
+  ggtitle("LEF - Daily") + 
+  xlab("")+
+  scale_color_manual(values=cbbPalette) +
+  theme(
+    strip.background = element_rect(color="white", fill="white", size=1.5, linetype="solid"))+
+  #scale_linetype_manual(values = c(rep("solid", 2), rep("dashed", 2))) +
+  stat_compare_means(method = "wilcox", aes(label = ..p.signif..), hide.ns = TRUE, size = 6, label.y = 150)+
+  theme_classic()
+
+
+LEF_plot <- ggplot(phenotype_results_all_LEF, aes(x = Treatment , y = LEF, color = Treatment)) + 
+  stat_summary(fun.y=mean,geom="line") +
+  theme(legend.key.height = unit(0.15, "cm"), legend.key.width = unit(0.25, "cm")) +
+  theme(legend.title = element_text(size = 8, face = "bold"), legend.text = element_text(size = 12)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5) +
+  ylab("LEF") + 
+  scale_x_discrete("Treatment",labels =c("Control","Experimental"))+
+  xlab("Treatment")+
+  ggtitle("LEF - Overall") + 
+  xlab("")+
+  geom_boxplot()+
+  scale_color_manual(values=cbbPalette) +
+  geom_jitter(shape=16, position=position_jitter(0.4), alpha=.3)+
+  theme(
+    strip.background = element_rect(color="white", fill="white", size=1.5, linetype="solid"))+
+  #scale_linetype_manual(values = c(rep("solid", 2), rep("dashed", 2))) +
+  stat_compare_means(method = "wilcox", aes(label = ..p.signif..), hide.ns = FALSE, size = 6, label.y = 0.9)+
+  theme_classic()
+
+
+LEF_combo <- ggarrange(LEF_plot_day,LEF_plot, common.legend = TRUE)
+
+# PhiNO
+phenotype_results_all_PhiNO <- phenotype_results_all[!is.na(phenotype_results_all$PhiNO),]
+phenotype_results_all_PhiNO 
+PhiNO_plot_day <- ggplot(phenotype_results_all_PhiNO, aes(x = Days_post_drought , y = PhiNO, color = Treatment, group = interaction(Treatment))) + 
+  geom_jitter()+
+  stat_summary(fun.y=mean,geom="line") +
+  theme(legend.key.height = unit(0.15, "cm"), legend.key.width = unit(0.25, "cm")) +
+  theme(legend.title = element_text(size = 8, face = "bold"), legend.text = element_text(size = 12)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5) +
+  ylab("PhiNO") + 
+  scale_x_discrete("Days Post Drought",labels =c("0","2","4","6","8","10","12","14","16","18","20","22","24"))+
+  xlab("Days Post Drought Start")+
+  ggtitle("PhiNO - Daily") + 
+  xlab("")+
+  scale_color_manual(values=cbbPalette) +
+  theme(
+    strip.background = element_rect(color="white", fill="white", size=1.5, linetype="solid"))+
+  #scale_linetype_manual(values = c(rep("solid", 2), rep("dashed", 2))) +
+  stat_compare_means(method = "wilcox", aes(label = ..p.signif..), hide.ns = TRUE, size = 6, label.y = .35)+
+  theme_classic()
+
+
+PhiNO_plot <- ggplot(phenotype_results_all_PhiNO, aes(x = Treatment , y = PhiNO, color = Treatment)) + 
+  stat_summary(fun.y=mean,geom="line") +
+  theme(legend.key.height = unit(0.15, "cm"), legend.key.width = unit(0.25, "cm")) +
+  theme(legend.title = element_text(size = 8, face = "bold"), legend.text = element_text(size = 12)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5) +
+  ylab("PhiNO") + 
+  scale_x_discrete("Treatment",labels =c("Control","Experimental"))+
+  xlab("Treatment")+
+  ggtitle("PhiNO - Overall") + 
+  xlab("")+
+  geom_boxplot()+
+  scale_color_manual(values=cbbPalette) +
+  geom_jitter(shape=16, position=position_jitter(0.4), alpha=.3)+
+  theme(
+    strip.background = element_rect(color="white", fill="white", size=1.5, linetype="solid"))+
+  #scale_linetype_manual(values = c(rep("solid", 2), rep("dashed", 2))) +
+  stat_compare_means(method = "wilcox", aes(label = ..p.signif..), hide.ns = FALSE, size = 6, label.y = 0.35)+
+  theme_classic()
+
+
+PhiNO_combo <- ggarrange(PhiNO_plot_day,PhiNO_plot, common.legend = TRUE)
+PhiNO_combo
+
+# relative chlorophyll
+phenotype_results_all_Relative_Chlorophyll <- phenotype_results_all[!is.na(phenotype_results_all$Relative_Chlorophyll),]
+phenotype_results_all_Relative_Chlorophyll 
+Relative_Chlorophyll_plot_day <- ggplot(phenotype_results_all_Relative_Chlorophyll, aes(x = Days_post_drought , y = Relative_Chlorophyll, color = Treatment, group = interaction(Treatment))) + 
+  geom_jitter()+
+  stat_summary(fun.y=mean,geom="line") +
+  theme(legend.key.height = unit(0.15, "cm"), legend.key.width = unit(0.25, "cm")) +
+  theme(legend.title = element_text(size = 8, face = "bold"), legend.text = element_text(size = 12)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5) +
+  ylab("Relative_Chlorophyll") + 
+  scale_x_discrete("Days Post Drought",labels =c("0","2","4","6","8","10","12","14","16","18","20","22","24"))+
+  xlab("Days Post Drought Start")+
+  ggtitle("Relative_Chlorophyll - Daily") + 
+  xlab("")+
+  scale_color_manual(values=cbbPalette) +
+  theme(
+    strip.background = element_rect(color="white", fill="white", size=1.5, linetype="solid"))+
+  #scale_linetype_manual(values = c(rep("solid", 2), rep("dashed", 2))) +
+  stat_compare_means(method = "wilcox", aes(label = ..p.signif..), hide.ns = TRUE, size = 6, label.y = 60)+
+  theme_classic()
+
+
+Relative_Chlorophyll_plot <- ggplot(phenotype_results_all_Relative_Chlorophyll, aes(x = Treatment , y = Relative_Chlorophyll, color = Treatment)) + 
+  stat_summary(fun.y=mean,geom="line") +
+  theme(legend.key.height = unit(0.15, "cm"), legend.key.width = unit(0.25, "cm")) +
+  theme(legend.title = element_text(size = 8, face = "bold"), legend.text = element_text(size = 12)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5) +
+  ylab("Relative_Chlorophyll") + 
+  scale_x_discrete("Treatment",labels =c("Control","Experimental"))+
+  xlab("Treatment")+
+  ggtitle("Relative_Chlorophyll - Overall") + 
+  xlab("")+
+  geom_boxplot()+
+  scale_color_manual(values=cbbPalette) +
+  geom_jitter(shape=16, position=position_jitter(0.4), alpha=.3)+
+  theme(
+    strip.background = element_rect(color="white", fill="white", size=1.5, linetype="solid"))+
+  #scale_linetype_manual(values = c(rep("solid", 2), rep("dashed", 2))) +
+  stat_compare_means(method = "wilcox", aes(label = ..p.signif..), hide.ns = FALSE, size = 6, label.y = 51)+
+  theme_classic()
+
+
+Relative_Chlorophyll_combo <- ggarrange(Relative_Chlorophyll_plot_day,Relative_Chlorophyll_plot, common.legend = TRUE)
+
+
+
+```
+
+
+
+
+
+
+Aboveground area and biomass,done with the mapping file because these samples weretaken only at the five timepoints.Photos were not taken at T1, so area analysis is not available. 
+```{r Aboveground}
+# Area plot setup
+phenotype_results_sampling_above <- phenotype_results_sampling[phenotype_results_sampling$Organ == "Leaves",]
+phenotype_results_sampling_above_area <- phenotype_results_sampling_above
+phenotype_results_sampling_above_area <- phenotype_results_sampling_above_area[!is.na(phenotype_results_sampling_above_area$above_area_cm2),]
+phenotype_results_sampling_above_area$Timepoint <- factor(phenotype_results_sampling_above_area$Timepoint,
+                                                            level=c("T2","T3","T4","T5"))
+above_area_plot <- ggplot(phenotype_results_sampling_above_area, aes(x = Timepoint, y = above_area_cm2, color = Treatment, group = interaction(Treatment))) + 
+  geom_jitter(shape=16, position=position_jitter(0.4), alpha=.3)+
+  stat_summary(fun.y=mean,geom="line") +
+  theme(legend.key.height = unit(0.15, "cm"), legend.key.width = unit(0.25, "cm")) +
+  theme(legend.title = element_text(size = 8, face = "bold"), legend.text = element_text(size = 12)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5) +
+  ylab("Aboveground Plant Area (cm2)") + 
+  scale_x_discrete("Timepoint",labels =c("T2","T3","T4","T5"))+
+  xlab("Timepoint")+
+  ggtitle("Aboveground Area") + 
+  xlab("")+
+  scale_color_manual(values=cbbPalette) +
+  theme(
+    strip.background = element_rect(color="white", fill="white", size=1.5, linetype="solid"))+
+  #scale_linetype_manual(values = c(rep("solid", 2), rep("dashed", 2))) +
+  stat_compare_means(method = "wilcox", aes(label = ..p.signif..), hide.ns = TRUE, size = 6, label.y = 73)+
+  theme_classic()
+
+
+# Above Biomass Plot Setup
+phenotype_results_sampling_above_biomass <- phenotype_results_sampling_above
+phenotype_results_sampling_above_biomass <- phenotype_results_sampling_above_biomass[!is.na(phenotype_results_sampling_above_biomass$above_biomass),]
+phenotype_results_sampling_above_biomass$Timepoint <- factor(phenotype_results_sampling_above_biomass$Timepoint,
+                                                            level=c("T1","T2","T3","T4","T5"))
+above_biomass_plot <- ggplot(phenotype_results_sampling_above_biomass, aes(x = Timepoint, y = above_biomass, color = Treatment, group = interaction(Treatment))) + 
+  geom_jitter(shape=16, position=position_jitter(0.4), alpha=.3)+
+  stat_summary(fun.y=mean,geom="line") +
+  theme(legend.key.height = unit(0.15, "cm"), legend.key.width = unit(0.25, "cm")) +
+  theme(legend.title = element_text(size = 8, face = "bold"), legend.text = element_text(size = 12)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5) +
+  ylab("Aboveground Plant Biomass(mg)") + 
+  scale_x_discrete("Timepoint",labels =c("T1","T2","T3","T4","T5"))+
+  xlab("Timepoint")+
+  ggtitle("Aboveground Biomass") + 
+  xlab("")+
+  scale_color_manual(values=cbbPalette) +
+  theme(
+    strip.background = element_rect(color="white", fill="white", size=1.5, linetype="solid"))+
+  #scale_linetype_manual(values = c(rep("solid", 2), rep("dashed", 2))) +
+  stat_compare_means(method = "wilcox", aes(label = ..p.signif..), hide.ns = TRUE, size = 6, label.y = 325)+
+  theme_classic()
+
+# plant height
+phenotype_results_all$Days_post_drought <- factor(phenotype_results_all$Days_post_drought,
+                                                            level=c("-2","0","2","4","6","8","10","12","14","16","18","20","22","24"))
+
+phenotype_results_all <- phenotype_results_all[!is.na(phenotype_results_all$Days_post_drought),]
+
+above_height_plot <- ggplot(phenotype_results_all, aes(x = Days_post_drought , y = Height_to_highest_node, color = Treatment, group = interaction(Treatment))) + 
+  geom_jitter(shape=16, position=position_jitter(0.4), alpha=.3)+
+  stat_summary(fun.y=mean,geom="line") +
+  theme(legend.key.height = unit(0.15, "cm"), legend.key.width = unit(0.25, "cm")) +
+  theme(legend.title = element_text(size = 8, face = "bold"), legend.text = element_text(size = 12)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5) +
+  ylab("Height to Highest Node (cm)") + 
+  scale_x_discrete("Days Post Drought",labels =c("-2","0","2","4","6","8","10","12","14","16","18","20","22","24"))+
+  xlab("Days Post Drought Start")+
+  ggtitle("Height to Highest Node") + 
+  xlab("")+
+  scale_color_manual(values=cbbPalette) +
+  theme(
+    strip.background = element_rect(color="white", fill="white", size=1.5, linetype="solid"))+
+  #scale_linetype_manual(values = c(rep("solid", 2), rep("dashed", 2))) +
+  stat_compare_means(method = "wilcox", aes(label = ..p.signif..), hide.ns = TRUE, size = 6, label.y = 12)+
+  theme_classic()
+
+above_phenotypes_combo <- ggarrange(above_area_plot,above_biomass_plot,above_height_plot,Phi2_plot,phiNPQ_plot,ncol =5,common.legend = TRUE, legend ="bottom")
+above_phenotypes_combo
+```
+
+
+Belowground plots, again performed with the mapping file as pictures only taken at molecular sampling points.
+```{r Belowground}
+phenotype_results_sampling_below <- phenotype_results_sampling[phenotype_results_sampling$Organ == "Roots",]
+# root tips
+phenotype_results_sampling_below_tips <- phenotype_results_sampling_below[!is.na(phenotype_results_sampling_below$Number.of.Root.Tips),]
+phenotype_results_sampling_below_tips$Timepoint <- factor(phenotype_results_sampling_below_tips$Timepoint,
+                                       level=c("T1","T2","T3","T4","T5"))
+root_tips_plot <- ggplot(phenotype_results_sampling_below_tips, aes(x = Timepoint, y = Number.of.Root.Tips, color = Treatment, group = interaction(Treatment))) + 
+  geom_jitter(shape=16, position=position_jitter(0.4), alpha=.3)+
+  stat_summary(fun.y=mean,geom="line") +
+  theme(legend.key.height = unit(0.15, "cm"), legend.key.width = unit(0.25, "cm")) +
+  theme(legend.title = element_text(size = 8, face = "bold"), legend.text = element_text(size = 12)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5) +
+  ylab("Number of Root Tips") + 
+  scale_x_discrete("Timepoint",labels =c("T1","T2","T3","T4","T5"))+
+  xlab("Timepoint")+
+  ggtitle("Root Tips") + 
+  xlab("")+
+  scale_color_manual(values=cbbPalette) +
+  theme(
+    strip.background = element_rect(color="white", fill="white", size=1.5, linetype="solid"))+
+  #scale_linetype_manual(values = c(rep("solid", 2), rep("dashed", 2))) +
+  stat_compare_means(method = "wilcox", aes(label = ..p.signif..), hide.ns = TRUE, size = 6, label.y = 375)+
+  theme_classic()
+
+
+# root length plot
+phenotype_results_sampling_below_length <- phenotype_results_sampling_below[!is.na(phenotype_results_sampling_below$Total.Root.Length.mm),]
+phenotype_results_sampling_below_length$Timepoint <- factor(phenotype_results_sampling_below_length$Timepoint,
+                                       level=c("T1","T2","T3","T4","T5"))
+root_length_total_plot <- ggplot(phenotype_results_sampling_below_length, aes(x = Timepoint, y = Total.Root.Length.mm, color = Treatment, group = interaction(Treatment))) + 
+  geom_jitter(shape=16, position=position_jitter(0.4), alpha=.3)+
+  stat_summary(fun.y=mean,geom="line") +
+  theme(legend.key.height = unit(0.15, "cm"), legend.key.width = unit(0.25, "cm")) +
+  theme(legend.title = element_text(size = 8, face = "bold"), legend.text = element_text(size = 12)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5) +
+  ylab("Total Root Length (mm)") + 
+  scale_x_discrete("Timepoint",labels =c("T1","T2","T3","T4","T5"))+
+  xlab("Timepoint")+
+  ggtitle("Total Root Length") + 
+  xlab("")+
+  scale_color_manual(values=cbbPalette) +
+  theme(
+    strip.background = element_rect(color="white", fill="white", size=1.5, linetype="solid"))+
+  #scale_linetype_manual(values = c(rep("solid", 2), rep("dashed", 2))) +
+  stat_compare_means(method = "wilcox", aes(label = ..p.signif..), hide.ns = TRUE, size = 6, label.y = 1490)+
+  theme_classic()
+
+# average root diameter
+phenotype_results_sampling_below_diameter <- phenotype_results_sampling_below[!is.na(phenotype_results_sampling_below$Average.Diameter.mm),]
+phenotype_results_sampling_below_diameter$Timepoint <- factor(phenotype_results_sampling_below_diameter$Timepoint,
+                                       level=c("T1","T2","T3","T4","T5"))
+
+
+average_diameter_plot <- ggplot(phenotype_results_sampling_below_diameter, aes(x = Timepoint, y = Average.Diameter.mm, color = Treatment, group = interaction(Treatment))) + 
+  geom_jitter(shape=16, position=position_jitter(0.4), alpha=.3)+
+  stat_summary(fun.y=mean,geom="line") +
+  theme(legend.key.height = unit(0.15, "cm"), legend.key.width = unit(0.25, "cm")) +
+  theme(legend.title = element_text(size = 8, face = "bold"), legend.text = element_text(size = 12)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5) +
+  ylab("Average Root Diameter (mm)") + 
+  scale_x_discrete("Timepoint",labels =c("T1","T2","T3","T4","T5"))+
+  xlab("Timepoint")+
+  ggtitle("Root Diameter") + 
+  xlab("")+
+  scale_color_manual(values=cbbPalette) +
+  theme(
+    strip.background = element_rect(color="white", fill="white", size=1.5, linetype="solid"))+
+  #scale_linetype_manual(values = c(rep("solid", 2), rep("dashed", 2))) +
+  stat_compare_means(method = "wilcox", aes(label = ..p.signif..), hide.ns = TRUE, size = 6, label.y = .1)+
+  theme_classic()
+
+
+# volume
+phenotype_results_sampling_below_volume <- phenotype_results_sampling_below[!is.na(phenotype_results_sampling_below$Volume.mm3),]
+phenotype_results_sampling_below_volume$Timepoint <- factor(phenotype_results_sampling_below_volume$Timepoint,
+                                       level=c("T1","T2","T3","T4","T5"))
+
+
+volume_plot <- ggplot(phenotype_results_sampling_below_volume, aes(x = Timepoint, y = Volume.mm3, color = Treatment, group = interaction(Treatment))) + 
+  geom_jitter(shape=16, position=position_jitter(0.4), alpha=.3)+
+  stat_summary(fun.y=mean,geom="line") +
+  theme(legend.key.height = unit(0.15, "cm"), legend.key.width = unit(0.25, "cm")) +
+  theme(legend.title = element_text(size = 8, face = "bold"), legend.text = element_text(size = 12)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5) +
+  ylab("Root Volume (mm^3)") + 
+  scale_x_discrete("Timepoint",labels =c("T1","T2","T3","T4","T5"))+
+  xlab("Timepoint")+
+  ggtitle("Root Volume") + 
+  xlab("")+
+  scale_color_manual(values=cbbPalette) +
+  theme(
+    strip.background = element_rect(color="white", fill="white", size=1.5, linetype="solid"))+
+  #scale_linetype_manual(values = c(rep("solid", 2), rep("dashed", 2))) +
+  stat_compare_means(method = "wilcox", aes(label = ..p.signif..), hide.ns = TRUE, size = 6, label.y = 250)+
+  theme_classic()
+
+# nodule counts 
+phenotype_results_sampling_below_nodules <- phenotype_results_sampling_below[!is.na(phenotype_results_sampling_below$nodule_count),]
+phenotype_results_sampling_below_nodules$Timepoint <- factor(phenotype_results_sampling_below_nodules$Timepoint,
+                                       level=c("T1","T2","T3","T4","T5"))
+root_nodules_plot <- ggplot(phenotype_results_sampling_below_nodules, aes(x = Timepoint, y = nodule_count, color = Treatment, group = interaction(Treatment))) + 
+  geom_jitter(shape=16, position=position_jitter(0.4), alpha=.3)+
+  stat_summary(fun.y=mean,geom="line") +
+  theme(legend.key.height = unit(0.15, "cm"), legend.key.width = unit(0.25, "cm")) +
+  theme(legend.title = element_text(size = 8, face = "bold"), legend.text = element_text(size = 12)) +
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5) +
+  ylab("Number of Nodules") + 
+  scale_x_discrete("Timepoint",labels =c("T1","T2","T3","T4","T5"))+
+  xlab("Timepoint")+
+  ggtitle("") + 
+  xlab("")+
+  scale_color_manual(values=cbbPalette) +
+  theme(
+    strip.background = element_rect(color="white", fill="white", size=1.5, linetype="solid"))+
+  #scale_linetype_manual(values = c(rep("solid", 2), rep("dashed", 2))) +
+   ggtitle("Nodule Counts") +
+  stat_compare_means(method = "wilcox", aes(label = ..p.signif..), hide.ns = TRUE, size = 6, label.y =15)+
+  theme_classic()
+
+
+root_plots_combo <- ggarrange(root_tips_plot,root_length_total_plot,average_diameter_plot,volume_plot, root_nodules_plot, ncol = 5,common.legend = TRUE, legend = "bottom")
+
+root_plots_combo
+```
+
+
+
+
+```{r Follow up experiments - aboveground mass}
+
+#well watered
+well_watered_biomass <- read.csv("plant_weight_well_watered_31622.csv")
+
+
+# stats added to plot outside of R
+ stats <- compare_means(Weight ~ Type, data=well_watered_biomass, method="wilcox")
+stats
+write.csv(stats, file = "stats_check.csv")
+well_watered_biomass_plot <- ggplot(well_watered_biomass, aes(x = Type, y = Weight, color = Genus)) + 
+  geom_boxplot()+
+  #stat_summary(fun.y=mean,geom="line") +
+  theme(axis.text.x = element_blank())+
+  theme(legend.key.height = unit(0.15, "cm"), legend.key.width = unit(0.25, "cm")) +
+  theme(legend.title = element_text(size = 8, face = "bold"), legend.text = element_text(size = 12)) +
+   geom_hline(yintercept = 177.8673913)+
+  geom_hline(yintercept = 160.7727273, linetype =2)+
+  #stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5) +
+  ylab("Biomass (mg)") + 
+
+  xlab("Treatment")+
+  ggtitle("Well Watered Aboveground Biomass") + 
+  xlab("")+
+  geom_boxplot()+
+  scale_color_manual(values=cbbPalette) +
+  geom_jitter(shape=16, position=position_jitter(0.4))+
+  theme(
+    strip.background = element_rect(color="white", fill="white", size=1.5, linetype="solid"))+
+  #stat_compare_means(comparisons = "my_comparisons")+
+  theme_classic()
+  #theme(axis.text.x = element_text(angle = -90))
+well_watered_biomass_plot
+
+
+
+# DROUGHT check
+drought_biomass_check <- read.csv("drought_weights_32722_indiv.csv")
+drought_biomass_check
+
+
+# add stats to plot outside R
+ stats_drought <- compare_means(Weight ~ Type, data=drought_biomass_check,method= "wilcox")
+
+stats_drought
+write.csv(stats_drought, file = "stats_check_drought.csv")
+drought_biomass_plot <- ggplot(drought_biomass_check, aes(x = Type, y = Weight, color = Genus)) + 
+  geom_boxplot()+
+  #stat_summary(fun.y=mean,geom="line") +
+  theme(axis.text.x = element_text(angle = 90))+
+  theme(legend.key.height = unit(0.15, "cm"), legend.key.width = unit(0.25, "cm")) +
+  theme(legend.title = element_text(size = 8, face = "bold"), legend.text = element_text(size = 12)) +
+   geom_hline(yintercept = 175.8488889)+
+  geom_hline(yintercept = 157.3818182, linetype =2)+
+  #stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.5) +
+  ylab("Biomass (mg)") + 
+
+  xlab("Treatment")+
+  ggtitle("Low-Moisture Aboveground Biomass") + 
+  xlab("")+
+  geom_boxplot()+
+  scale_color_manual(values=cbbPalette) +
+  geom_jitter(shape=16, position=position_jitter(0.4))+
+  theme(
+    strip.background = element_rect(color="white", fill="white", size=1.5, linetype="solid"))+
+  #stat_compare_means(comparisons = "my_comparisons")+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = -90))
+
+drought_biomass_plot
+
+```
